@@ -392,7 +392,51 @@ public int findMinInSortedRotated(int[] nums) {
     }
     
  
+public int minEatingSpeed(int[] piles, int h) {
+if(piles.length==1)
+{
+    
+}
 
+
+    int max=0;
+
+        for(int i=0;i<piles.length;i++)
+        {
+            if(piles[i]>max) max=piles[i];
+        }
+       int st=1;
+       int end=max;
+       int candidates=max;
+       while(st<=end)
+       {
+        int mid=(st+end)/2;
+        long sum=division(mid,piles);
+
+        if (sum<=h){
+            candidates=Math.min(candidates,mid);
+       end=mid-1;
+        }
+         
+         else st=mid+1;
+
+ 
+        
+       }
+
+       return candidates;
+    }
+
+     public long division(int mid,int piles[])
+    {
+        long sum=0;
+        for(int i=0;i<piles.length;i++)
+        {
+            sum+=(long)Math.ceil((double)piles[i]/mid);
+        }
+
+        return sum;
+    }
 
 
 

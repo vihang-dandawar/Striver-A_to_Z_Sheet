@@ -393,10 +393,6 @@ public int findMinInSortedRotated(int[] nums) {
     
  
 public int minEatingSpeed(int[] piles, int h) {
-if(piles.length==1)
-{
-    
-}
 
 
     int max=0;
@@ -411,7 +407,7 @@ if(piles.length==1)
        while(st<=end)
        {
         int mid=(st+end)/2;
-        long sum=division(mid,piles);
+        long sum=division1(mid,piles);
 
         if (sum<=h){
             candidates=Math.min(candidates,mid);
@@ -427,7 +423,7 @@ if(piles.length==1)
        return candidates;
     }
 
-     public long division(int mid,int piles[])
+     public long division1(int mid,int piles[])
     {
         long sum=0;
         for(int i=0;i<piles.length;i++)
@@ -438,6 +434,77 @@ if(piles.length==1)
         return sum;
     }
 
+
+// Min Days to bloom flowers
+
+    // {7,7,7,7,13,11,12,7} here n=8 means there are 8 flowers and nums[i] is there days to be taken for blooming
+    //at day 13 all flowers will bloom and we can make 2 bouquets of size 3 each (7,7,7) and (11,12,13) so answer is 13
+    // for making m=2 bouquets of size k=3  adjacent flowers we need to find min days 
+    //here at day 12 we can get (7,7,7) and (11,12,7) so 12 days is the min ans
+    // Approach BS ans lies between min and max bloom days and we can check for each mid if we can make m bouquets of size k or not
+    // Edge case: if m*k > bloomDay.length then return -1 as we cannot make required bouquets
+
+ 
+
+
+    public static int minDays(int[] bloomDay, int m, int k) {
+        // Edge case: Cast to long to prevent integer overflow when multiplying m * k.
+        // If total required flowers exceed available flowers, it's impossible.
+        if ((long) m * k > bloomDay.length) {
+            return -1;
+        }
+
+        int max = 0;
+        int min = Integer.MAX_VALUE;
+
+        // Find the minimum and maximum bloom days to define our binary search bounds
+        for (int i = 0; i < bloomDay.length; i++) {
+            if (max < bloomDay[i]) max = bloomDay[i];
+            if (min > bloomDay[i]) min = bloomDay[i];
+        }
+
+        int st = min;   // Earliest day at least one flower blooms
+        int end = max;  // Latest day when ALL flowers are guaranteed to be bloomed
+        int ans = -1;   // Stores the minimum valid day found so far
+
+        while (st <= end) {
+            // Prevents potential integer overflow compared to (st + end) / 2
+            int mid = st + (end - st) / 2;
+
+            // Reset counts fresh for each new candidate day `mid` we test
+            int bouquet = 0;
+            int counter = 0;
+
+            // Greedily count how many bouquets of size `k` can be formed by day `mid`
+            for (int i = 0; i < bloomDay.length; i++) {
+                if (mid >= bloomDay[i]) {
+                    // Flower has bloomed by day `mid`; add to current adjacent streak
+                    counter++;
+
+                    // Once we have `k` adjacent flowers, bundle them into a bouquet
+                    if (counter == k) {
+                        bouquet++;
+                        counter = 0; // Reset streak to start building the next bouquet
+                    }
+                } else {
+                    // Flower hasn't bloomed yet, which breaks the adjacency requirement
+                    counter = 0;
+                }
+            }
+
+            // Decide which half of the search space to explore next
+            if (bouquet >= m) {
+                ans = mid;      // `mid` works, save it as our best answer so far
+                end = mid - 1;  // Try to find an even earlier valid day in the left half
+            } else {
+                st = mid + 1;   // Not enough bouquets made; we need more days (right half)
+            }
+        }
+
+        return ans;
+    }
+
+    
 
 
 
